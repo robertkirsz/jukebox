@@ -3,14 +3,24 @@
     <div v-if="showSpinner">Loading...</div>
     <div v-else-if="showError">{{ showError }}</div>
     <div v-else-if="showNoResultsMessage">Nothing found</div>
-    <ul v-else>
-      <li
-        v-for="artist in artists.items"
-        @click="chooseArtist(artist)"
-      >
-        {{ artist.name }}
-      </li>
-    </ul>
+    <div v-else class="list-wrapper">
+      <ul>
+        <li
+          v-for="artist in artists.items"
+          @click="chooseArtist(artist)"
+        >
+          {{ artist.name }}
+        </li>
+      </ul>
+      <div class="pagination">
+        <button class="show-previous-button" @click="showPrevious" v-if="artists.previous">
+          <i class="fa fa-arrow-left" />
+        </button>
+        <button class="show-next-button" @click="showNext" v-if="artists.next">
+          <i class="fa fa-arrow-right" />
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -30,7 +40,7 @@ export default {
     showNoResultsMessage () { return this.artists.items && !this.artists.items.length }
   },
   methods: {
-    ...mapActions(['chooseArtist'])
+    ...mapActions(['chooseArtist', 'showPrevious', 'showNext'])
   }
 }
 </script>
@@ -41,6 +51,15 @@ export default {
   li {
     cursor: pointer;
     &:hover { text-decoration: underline; }
+  }
+  .list-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  .pagination {
+    display: flex;
+    .show-previous-button { margin-right: auto; }
+    .show-next-button { margin-left: auto; }
   }
 }
 </style>

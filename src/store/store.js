@@ -13,7 +13,8 @@ export const store = new Vuex.Store({
     artists: {
       fetching: false,
       error: null,
-      items: null
+      items: null,
+      limit: 15
     },
     artist: null
   },
@@ -23,7 +24,7 @@ export const store = new Vuex.Store({
   },
   mutations: {
     saveArtists (state, payload) {
-      state.artists.items = payload
+      state.artists = { ...state.artists, ...payload }
     },
     artistsError (state, payload) {
       state.artists.error = payload
@@ -37,17 +38,20 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
-    getArtists (context, payload) {
-      context.state.artists.error && context.commit('artistsError', null)
+    sendRequest (context, url) {
+      const { error } = context.state.artists
+
+      error && context.commit('artistsError', null)
+
       getArtistsTimeout = setTimeout(() => {
         context.commit('artistsFetching', true)
       }, 200)
 
       axios
-        .get(`https://api.spotify.com/v1/search?q=${payload}&type=artist`)
+        .get(url)
         .then(response => {
           clearTimeout(getArtistsTimeout)
-          context.commit('saveArtists', response.data.artists.items)
+          context.commit('saveArtists', response.data.artists)
           context.commit('artistsFetching', false)
         })
         .catch(error => {
@@ -55,6 +59,18 @@ export const store = new Vuex.Store({
           context.commit('artistsError', handleError(error))
           context.commit('artistsFetching', false)
         })
+    },
+    getArtists (context, payload) {
+      const { limit } = context.state.artists
+      context.dispatch('sendRequest', `https://api.spotify.com/v1/search?q=${payload}&type=artist&limit=${limit}`)
+    },
+    showPrevious (context) {
+      const { previous } = context.state.artists
+      context.dispatch('sendRequest', previous)
+    },
+    showNext (context) {
+      const { next } = context.state.artists
+      context.dispatch('sendRequest', next)
     },
     chooseArtist (context, payload) {
       context.commit('chooseArtist', payload)
