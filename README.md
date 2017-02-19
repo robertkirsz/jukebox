@@ -1,4 +1,4 @@
-# jukebox
+# Jukebox
 
 > Spotify API Jukebox
 
