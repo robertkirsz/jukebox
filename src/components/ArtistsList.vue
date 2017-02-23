@@ -1,7 +1,6 @@
 <template>
   <div v-if="showComponent" class="artists-list bordered">
-    <div v-if="showSpinner">Loading...</div>
-    <div v-else-if="showError">{{ showError }}</div>
+    <div if="showError">{{ showError }}</div>
     <div v-else-if="showNoResultsMessage">Nothing found</div>
     <div v-else class="list-wrapper">
       <ul>
@@ -32,11 +31,10 @@ export default {
   computed: {
     ...mapGetters(['artists']),
     showComponent () {
-      const { fetching, error, items } = this.artists
-      return fetching || error || items
+      const { error, items } = this.artists
+      return error || items
     },
     showError () { return this.artists.error },
-    showSpinner () { return this.artists.fetching },
     showNoResultsMessage () { return this.artists.items && !this.artists.items.length }
   },
   methods: {
