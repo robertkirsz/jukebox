@@ -3,6 +3,7 @@
     <search />
     <artists-list />
     <artist-details />
+    <albums-carousel />
   </div>
 </template>
 
@@ -10,13 +11,15 @@
 import Search from './components/Search'
 import ArtistsList from './components/ArtistsList'
 import ArtistDetails from './components/ArtistDetails'
+import AlbumsCarousel from './components/AlbumsCarousel'
 
 export default {
   name: 'app',
   components: {
     Search,
     ArtistsList,
-    ArtistDetails
+    ArtistDetails,
+    AlbumsCarousel
   }
 }
 </script>

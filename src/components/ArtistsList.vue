@@ -1,6 +1,6 @@
 <template>
   <div v-if="showComponent" class="artists-list bordered">
-    <div if="showError">{{ showError }}</div>
+    <div v-if="showError">{{ showError }}</div>
     <div v-else-if="showNoResultsMessage">Nothing found</div>
     <div v-else class="list-wrapper">
       <ul>
