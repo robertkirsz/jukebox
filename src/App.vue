@@ -2,7 +2,6 @@
   <div id="app">
     <search />
     <artists-list />
-    <artist-details />
     <albums-carousel />
   </div>
 </template>
@@ -10,7 +9,6 @@
 <script>
 import Search from './components/Search'
 import ArtistsList from './components/ArtistsList'
-import ArtistDetails from './components/ArtistDetails'
 import AlbumsCarousel from './components/AlbumsCarousel'
 
 export default {
@@ -18,7 +16,6 @@ export default {
   components: {
     Search,
     ArtistsList,
-    ArtistDetails,
     AlbumsCarousel
   }
 }
