@@ -1,12 +1,14 @@
 <template>
   <div v-if="showComponent" class="artists-list bordered">
     <div v-if="showError">{{ showError }}</div>
-    <div v-else-if="showNoResultsMessage">Nothing found</div>
+    <div v-else-if="showNoResultsMessage" class="nothing-message">Nothing found</div>
     <div v-else class="list-wrapper">
       <ul>
         <li
           v-for="artist in artists.items"
           @click="chooseArtist(artist)"
+          @keyup.enter="chooseArtist(artist)"
+          tabindex="1"
         >
           {{ artist.name }}
         </li>
@@ -45,19 +47,37 @@ export default {
 
 <style lang="scss" scoped>
 .artists-list {
-  list-style: none;
+  ul {
+    list-style: none;
+    margin: 1em 0 0;
+    padding: 0 0 0 1.5em;
+  }
   li {
+    padding: 0;
     cursor: pointer;
-    &:hover { text-decoration: underline; }
+    width: 18em;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:not(:last-of-type) { margin-bottom: 0.5em; }
+    &:hover,
+    &:focus { text-decoration: underline; }
   }
   .list-wrapper {
     display: flex;
     flex-direction: column;
   }
   .pagination {
-    display: flex;
+    // display: flex;
+    display: none;
     .show-previous-button { margin-right: auto; }
     .show-next-button { margin-left: auto; }
   }
+}
+
+.nothing-message {
+  margin-top: 1em;
+  text-align: center;
 }
 </style>

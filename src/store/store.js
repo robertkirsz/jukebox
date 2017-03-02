@@ -5,23 +5,25 @@ import { handleError } from '../utils'
 
 Vue.use(Vuex)
 
-let getArtistsTimeout = null
+const initialArtists = {
+  fetching: false,
+  error: null,
+  items: null,
+  limit: 10
+}
+
+const initialAlbums = {
+  fetching: false,
+  error: null,
+  items: null
+}
 
 export const store = new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    artists: {
-      fetching: false,
-      error: null,
-      items: null,
-      limit: 15
-    },
+    artists: initialArtists,
     artist: null,
-    albums: {
-      fetching: false,
-      error: null,
-      items: null
-    }
+    albums: initialAlbums
   },
   getters: {
     artists: state => state.artists,
@@ -32,48 +34,68 @@ export const store = new Vuex.Store({
     saveArtists (state, payload) {
       state.artists = { ...state.artists, ...payload }
     },
+    clearArtists (state) {
+      state.artists = initialArtists
+    },
     saveAlbums (state, payload) {
       state.albums = { ...state.albums, ...payload }
+    },
+    clearAlbums (state) {
+      state.albums = initialAlbums
     },
     artistsError (state, payload) {
       state.artists.error = payload
     },
-    artistsFetching (state, payload) {
-      state.artists.fetching = payload
+    albumsError (state, payload) {
+      state.albums.error = payload
     },
-    albumsFetching (state, payload) {
-      state.albums.fetching = payload
+    artistsFetching (state) {
+      state.artists.fetching = true
+    },
+    artistsFetched (state) {
+      state.artists.fetching = false
+    },
+    albumsFetching (state) {
+      state.albums.fetching = true
+    },
+    albumsFetched (state) {
+      state.albums.fetching = false
     },
     chooseArtist (state, payload) {
       state.artist = payload
+    },
+    clearArtist (state) {
+      state.artist = null
     }
   },
   actions: {
-    sendRequest (context, url) {
-      const { error } = context.state.artists
-
-      error && context.commit('artistsError', null)
-
-      getArtistsTimeout = setTimeout(() => {
-        context.commit('artistsFetching', true)
-      }, 200)
-
-      axios
-        .get(url)
-        .then(response => {
-          clearTimeout(getArtistsTimeout)
-          context.commit('saveArtists', response.data.artists)
-          context.commit('artistsFetching', false)
-        })
-        .catch(error => {
-          clearTimeout(getArtistsTimeout)
-          context.commit('artistsError', handleError(error))
-          context.commit('artistsFetching', false)
-        })
-    },
     getArtists (context, payload) {
-      const { limit } = context.state.artists
-      context.dispatch('sendRequest', `https://api.spotify.com/v1/search?q=${payload}&type=artist&limit=${limit}`)
+      // Clear artist if there is any
+      if (context.state.artist) context.commit('clearArtist')
+
+      // Clear artists list if search query is empty
+      if (!payload) {
+        context.commit('clearArtists')
+      } else {
+        const { limit, error } = context.state.artists
+        // Hide any errors
+        error && context.commit('artistsError', null)
+
+        context.commit('artistsFetching')
+
+        axios
+          .get(`https://api.spotify.com/v1/search?q=${payload}&type=artist&limit=${limit}`)
+          .then(response => {
+            // Clear albums if there are any
+            if (context.state.albums.items) context.commit('clearAlbums')
+            context.commit('artistsFetched')
+            context.commit('saveArtists', response.data.artists)
+          })
+          .catch(error => {
+            context.commit('artistsFetched')
+            context.commit('artistsError', handleError(error))
+          })
+      }
     },
     showPrevious (context) {
       const { previous } = context.state.artists
@@ -88,19 +110,19 @@ export const store = new Vuex.Store({
       context.commit('chooseArtist', payload)
     },
     getAlbums (context, payload) {
-      context.commit('albumsFetching', true)
-      console.warn('getAlbums', context)
+      context.commit('albumsFetching')
 
       axios
         .get(`https://api.spotify.com/v1/artists/${payload.id}/albums?album_type=album&market=US&limit=50`)
         .then(response => {
+          // Clear artists if there are any
+          if (context.state.artists.items) context.commit('clearArtists')
+          context.commit('albumsFetched')
           context.commit('saveAlbums', response.data)
-          context.commit('albumsFetching', false)
         })
         .catch(error => {
-          console.log(handleError(error))
-          // context.commit('artistsError', handleError(error))
-          context.commit('albumsFetching', false)
+          context.commit('albumsFetched')
+          context.commit('albumsError', handleError(error))
         })
     }
   }
