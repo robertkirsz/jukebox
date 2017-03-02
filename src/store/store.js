@@ -111,9 +111,9 @@ export const store = new Vuex.Store({
     },
     getAlbums (context, payload) {
       context.commit('albumsFetching')
-
+      // &market=US
       axios
-        .get(`https://api.spotify.com/v1/artists/${payload.id}/albums?album_type=album&market=US&limit=50`)
+        .get(`https://api.spotify.com/v1/artists/${payload.id}/albums?album_type=album&limit=50`)
         .then(response => {
           // Clear artists if there are any
           if (context.state.artists.items) context.commit('clearArtists')
