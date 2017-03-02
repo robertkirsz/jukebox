@@ -4,13 +4,13 @@
     placeholder="Artist's name"
     v-model="query"
     @input="search"
+    @keydown.down="focusOnList"
     autofocus
     tabindex="1"
   />
 </template>
 
 <script>
-import _get from 'lodash/get'
 import _debounce from 'lodash/debounce'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -22,18 +22,23 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['artist'])
+    ...mapGetters(['artist', 'artists'])
   },
   methods: {
     ...mapActions(['getArtists']),
+    focusOnList () {
+      if (!this.artists.items || !this.artists.items.length) return
+      document.querySelectorAll('.artists-list li')[0].focus()
+    },
     search: _debounce(function () {
       this.getArtists(this.query)
     }, 300)
   },
   watch: {
     artist (artist) {
-      console.log('artist', artist)
-      this.query = _get(artist, 'name', '')
+      if (artist) {
+        this.query = artist.name
+      }
     }
   }
 }
