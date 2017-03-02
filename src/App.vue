@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="search-wrapper" :class="searchWraperClass">
+    <div class="search-wrapper" :class="searchWrapperClass">
       <search />
       <artists-list />
     </div>
@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     ...mapGetters(['artists', 'albums']),
-    searchWraperClass () {
+    searchWrapperClass () {
       return this.artists.items || this.albums.items
         ? 'top'
         : 'center'
@@ -35,12 +35,12 @@ export default {
 <style lang="scss">
 body {
   display: flex;
+  flex-direction: column;
+  width: 100vw;
   height: 100vh;
   background: black url("https://images.unsplash.com/photo-1483954743958-e7db4da5b8d5?dpr=2&auto=format&fit=crop&w=1500&h=1000&q=80&cs=tinysrgb&crop=") no-repeat center center;
   background-size: cover;
   font: 18px Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   &::after {
     content: "";
@@ -52,23 +52,27 @@ body {
 }
 
 #app {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: auto;
-  width: 94vw;
-  height: 92vh;
+  margin: 30px;
   background: rgba(240, 240, 240, 0.6);
-  box-shadow: 0 0 25px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 25px 3px rgba(0, 0, 0, 0.2);
 }
 
 .search-wrapper {
   transition: margin-top 0.6s ease;
   &.center {
-    margin-top: 40%;
+    margin-top: 30vh;
   }
   &.top {
-    margin-top: 5%;
+    margin-top: 10vh;
   }
+}
+
+.nothing-found-message {
+  margin-top: 1em;
+  text-align: center;
 }
 </style>

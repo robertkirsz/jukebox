@@ -1,5 +1,6 @@
 <template>
-  <carousel-3d v-if="showComponent" :width="300" :height="300">
+  <div v-if="showNothingFoundMessage" class="nothing-found-message">No albums found</div>
+  <carousel-3d v-else-if="showComponent" :width="300" :height="300">
     <slide v-for="(album, index) in albums.items" :index="index">
       <img :src="album.images[0].url" />
     </slide>
@@ -18,6 +19,7 @@ export default {
   },
   computed: {
     ...mapGetters(['albums']),
+    showNothingFoundMessage () { return this.albums.items && !this.albums.items.length },
     showComponent () {
       const { error, items } = this.albums
       return error || items
